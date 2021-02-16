@@ -53,19 +53,11 @@ class Apple {
 }
 
 const getRandomAppleX = () => {
-  let randomAppleX = Math.floor(Math.random() * (390 / 10)) * 10 + 10;
-  if (randomAppleX === 0 || randomAppleX === 10 || randomAppleX === 390) {
-    randomAppleX = Math.floor(Math.random() * (390 / 10)) * 10 + 10;
-  }
-  return randomAppleX;
+  return Math.floor(Math.random() * (390 / 10)) * 10 + 10;
 };
 
 const getRandomAppleY = () => {
-  let randomAppleY = Math.floor(Math.random() * (290 / 10)) * 10 + 10;
-  if (randomAppleY === 0 || randomAppleY === 10 || randomAppleY === 290) {
-    randomAppleY = Math.floor(Math.random() * (290 / 10)) * 10 + 10;
-  }
-  return randomAppleY;
+  return Math.floor(Math.random() * (290 / 10)) * 10 + 10;
 };
 
 const apple = new Apple(getRandomAppleX(), getRandomAppleY(), 5);
