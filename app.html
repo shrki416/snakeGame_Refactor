@@ -2,22 +2,27 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Snake Game</title>
+    <link rel="preconnect" href="https://fonts.gstatic.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=VT323&display=swap"
+      rel="stylesheet"
+    />
     <link rel="stylesheet" href="app.css" />
+    <title>The Snake Game</title>
   </head>
   <body>
-      <h1 id="title">SNAKE GAME</h1>
-      <div class="container-2">
-        <h2 id="score">SCORE : 0</h2>
-        <p id="score-output"></p>
-        <button id="play-again-btn">PLAY AGAIN</button>
-      </div>
-      </div>
-      <canvas id="game-display" width="400px" height="300px"></canvas>
-      <div class="container-3">
-        <p>Press the arrow keys to move the snake. For every apple eaten the score goes up.</p>
-      </div>
+    <h1>The Snake Game</h1>
+    <div class="container">
+      <canvas id="game-board" height="500" width="600"></canvas>
+    </div>
+    <div id="score">
+      <span>SCORE:</span>
+    </div>
+    <div id="high-score">
+      <span>HIGH SCORE:</span>
+    </div>
     <script src="app.js"></script>
   </body>
 </html>
