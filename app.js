@@ -2,7 +2,7 @@ const canvas = document.querySelector("#game-board");
 const ctx = canvas.getContext("2d");
 
 const FRAMES_PER_SECOND = 10;
-let GRID_SIZE = 20;
+const GRID_SIZE = 20;
 
 let score = 0;
 let gameOver = true;
@@ -22,12 +22,15 @@ let scoreLocalStorage = {
 };
 
 let snake = {
-  body: [],
-  length: 5,
-  x: 200,
-  y: 200,
-  directionX: 0,
-  directionY: 0,
+  body: [
+    { x: 200, y: 200 },
+    { x: 180, y: 200 },
+    { x: 160, y: 200 },
+    { x: 140, y: 200 },
+    { x: 120, y: 200 },
+  ],
+  direction: undefined,
+  // speed: 20,
 };
 
 const drawGameBoard = () => {
@@ -86,22 +89,36 @@ const drawGameOver = () => {
   );
 };
 
-const buildBody = () => {
-  const snakeSegment = new SnakeBodySegment(snake.x, snake.y, GRID_SIZE);
-  return snake.body.unshift(snakeSegment);
-};
+// const buildBody = () => {
+//   const snakeSegment = new SnakeBodySegment(
+//     snake.body[0].x,
+//     snake.body[0].y,
+//     GRID_SIZE
+//   );
+//   return snake.body.unshift(snakeSegment);
+// };
 
-const drawBody = () => {
-  buildBody();
-  snake.body.forEach((elem) => {
-    ctx.fillStyle = "rgb(221, 161, 94)";
-    ctx.fillRect(elem.snakeX, elem.snakeY, elem.width, elem.height);
-    ctx.strokeStyle = "rgb(241, 201, 114)";
-    ctx.lineWidth = 1;
-    ctx.strokeRect(elem.snakeX, elem.snakeY, elem.width, elem.height);
-  });
-  if (snake.body.length > snake.length) snake.body.pop();
-};
+// const drawBody = () => {
+//   buildBody();
+//   snake.body.forEach((elem) => {
+//     ctx.fillStyle = "rgb(221, 161, 94)";
+//     ctx.fillRect(elem.snakeX, elem.snakeY, elem.width, elem.height);
+//     ctx.strokeStyle = "rgb(241, 201, 114)";
+//     ctx.lineWidth = 1;
+//     ctx.strokeRect(elem.snakeX, elem.snakeY, elem.width, elem.height);
+//   });
+//   if (snake.body.length > snake.length) snake.body.pop();
+// };
+
+function drawSnake() {
+  ctx.fillStyle = "rgb(221, 161, 94)";
+  ctx.fillRect(snake.body[0].x, snake.body[0].y, GRID_SIZE, GRID_SIZE);
+  ctx.strokeStyle = "rgb(241, 201, 114)";
+
+  for (const part of snake.body) {
+    ctx.fillRect(part.x, part.y, GRID_SIZE, GRID_SIZE);
+  }
+}
 
 class SnakeBodySegment {
   constructor(bodyPosX, bodyPosY, elementSize) {
@@ -112,55 +129,79 @@ class SnakeBodySegment {
   }
 }
 
-const drawHead = () => {
-  if (snake.x % GRID_SIZE === 0 && snake.y % GRID_SIZE === 0) {
-    getDirection();
-  }
-  ctx.fillStyle = "rgb(221, 161, 94)";
-  ctx.fillRect(
-    (snake.x += GRID_SIZE * snake.directionX),
-    (snake.y += GRID_SIZE * snake.directionY),
-    GRID_SIZE,
-    GRID_SIZE
-  );
-  ctx.strokeStyle = "rgb(241, 201, 114)";
-  ctx.lineWidth = 1;
-  ctx.strokeRect(snake.x, snake.y, GRID_SIZE, GRID_SIZE);
-};
+// const drawHead = () => {
+//   if (snake.x % GRID_SIZE === 0 && snake.y % GRID_SIZE === 0) {
+//     getDirection();
+//   }
+//   ctx.fillStyle = "rgb(221, 161, 94)";
+//   ctx.fillRect(
+//     (snake.x += GRID_SIZE * snake.directionX),
+//     (snake.y += GRID_SIZE * snake.directionY),
+//     GRID_SIZE,
+//     GRID_SIZE
+//   );
+//   ctx.strokeStyle = "rgb(241, 201, 114)";
+//   ctx.lineWidth = 1;
+//   ctx.strokeRect(snake.x, snake.y, GRID_SIZE, GRID_SIZE);
+// };
 
-const getDirection = () => {
-  window.addEventListener("keydown", (e) => {
-    switch (e.code) {
-      case "ArrowUp":
-        snake.directionX = 0;
-        if (snake.directionY === 1) {
-          return;
-        } else snake.directionY = -1;
-        break;
-      case "ArrowDown":
-        snake.directionX = 0;
-        if (snake.directionY === -1) {
-          return;
-        } else snake.directionY = 1;
-        break;
-      case "ArrowLeft":
-        snake.directionY = 0;
-        if (snake.directionX === 1) {
-          return;
-        } else snake.directionX = -1;
-        break;
-      case "ArrowRight":
-        snake.directionY = 0;
-        if (snake.directionX === -1) {
-          return;
-        } else snake.directionX = 1;
-        break;
-      default:
-        console.log("Ignored");
-        break;
-    }
-  });
-};
+//this should be called moveSnake()
+function getDirection() {
+  if (!snake.direction) return;
+
+  for (let i = snake.body.length - 1; i > 0; i--) {
+    const parent = snake.body[i - 1];
+    snake.body[i] = new SnakeBodySegment(parent.x, parent.y, GRID_SIZE);
+  }
+  switch (snake.direction) {
+    case "ArrowUp":
+      snake.body[0].y -= GRID_SIZE;
+      break;
+    case "ArrowDown":
+      snake.body[0].y += GRID_SIZE;
+      break;
+    case "ArrowRight":
+      snake.body[0].x += GRID_SIZE;
+      break;
+    case "ArrowLeft":
+      snake.body[0].x -= GRID_SIZE;
+      break;
+  }
+}
+
+// const getDirection = () => {
+//   window.addEventListener("keydown", (e) => {
+//     switch (e.code) {
+//       case "ArrowUp":
+//         snake.directionX = 0;
+//         if (snake.directionY === 1) {
+//           return;
+//         } else snake.directionY = -1;
+//         break;
+//       case "ArrowDown":
+//         snake.directionX = 0;
+//         if (snake.directionY === -1) {
+//           return;
+//         } else snake.directionY = 1;
+//         break;
+//       case "ArrowLeft":
+//         snake.directionY = 0;
+//         if (snake.directionX === 1) {
+//           return;
+//         } else snake.directionX = -1;
+//         break;
+//       case "ArrowRight":
+//         snake.directionY = 0;
+//         if (snake.directionX === -1) {
+//           return;
+//         } else snake.directionX = 1;
+//         break;
+//       default:
+//         console.log("Ignored");
+//         break;
+//     }
+//   });
+// };
 
 const drawApple = () => {
   snake.body.forEach(({ snakeX, snakeY }) => {
@@ -199,33 +240,32 @@ function getRandomApplePosition() {
 
 const boundaryCheck = () => {
   if (
-    snake.x < 0 ||
-    snake.x === canvas.width ||
-    snake.y < 0 ||
-    snake.y === canvas.height
+    snake.body[0].x < 0 ||
+    snake.body[0].x === canvas.width ||
+    snake.body[0].y < 0 ||
+    snake.body[0].y === canvas.height
   ) {
     gameOver = true;
-    GRID_SIZE = -GRID_SIZE;
   }
 };
 
 const appleCheck = () => {
   if (snake.x === apple.x && snake.y === apple.y) {
     getRandomApplePosition();
-    snake.length += 1;
     score++;
     scoreBoard.textContent = `SCORE: ${score}`;
   }
 };
 
 const bodyCheck = () => {
-  snake.body.forEach(({ snakeX, snakeY }) => {
-    if (snake.directionX === 0 && snake.directionY === 0) {
-      return;
-    } else if (snake.y === snakeY && snake.x === snakeX) {
-      gameOver = true;
+  for (let i = 1; i < snake.body.length; i++) {
+    if (
+      snake.body[0].x === snake.body[i].x &&
+      snake.body[0].y === snake.body[i].y
+    ) {
+      return true;
     }
-  });
+  }
 };
 
 const createLocalStorage = () => {
@@ -263,10 +303,26 @@ const checkGameOver = () => {
 };
 
 window.addEventListener("keydown", (e) => {
-  if (gameOver && e.code === "Space") {
-    gameOver = false;
-    playGame();
-    score = 0;
+  switch (e.code) {
+    case "ArrowUp":
+      if (snake.direction !== "ArrowDown") snake.direction = "ArrowUp";
+      break;
+    case "ArrowDown":
+      if (snake.direction !== "ArrowUp") snake.direction = "ArrowDown";
+      break;
+    case "ArrowRight":
+      if (snake.direction !== "ArrowLeft") snake.direction = "ArrowRight";
+      break;
+    case "ArrowLeft":
+      if (snake.direction !== "ArrowRight") snake.direction = "ArrowLeft";
+      break;
+    case "Space":
+      if (gameOver) {
+        gameOver = false;
+        playGame();
+        score = 0;
+      }
+      break;
   }
 });
 
@@ -274,8 +330,10 @@ const playGame = () => {
   setInterval(function () {
     drawGameBoard();
     drawApple();
-    drawBody();
-    drawHead();
+    drawSnake();
+    getDirection();
+    // drawBody();
+    // drawHead();
     boundaryCheck();
     appleCheck();
     bodyCheck();
